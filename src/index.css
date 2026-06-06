@@ -1,0 +1,47 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap');
+
+:root {
+  --bg-canvas: #000000;
+  --bg-surface: #0a0c10;
+  --bg-surface-elevated: #12161f;
+  --text-main: #ffffff;
+  --text-muted: #626f84;
+  --brand-primary: #a3ff12; /* Neon Volt Green from image_1e52fe.png */
+  --brand-primary-glow: rgba(163, 255, 18, 0.15);
+  --border-technical: #161b26;
+  --radius-sharp: 4px; /* Industrial, minimal corner radiuses */
+  --transition-fast: all 0.2s ease-in-out;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background-color: var(--bg-canvas);
+  color: var(--text-main);
+  overflow-x: hidden;
+}
+
+/* Technical Monospace Elements */
+.tech-mono {
+  font-family: 'Space Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+.interactive-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-technical);
+  border-radius: var(--radius-sharp);
+  transition: var(--transition-fast);
+}
+
+.interactive-card:hover {
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 20px var(--brand-primary-glow);
+}
