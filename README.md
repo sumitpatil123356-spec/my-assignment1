@@ -255,6 +255,5 @@ Developed as a frontend engineering project focused on premium gaming eCommerce 
 
 ---
 
-## License
-
-This project is created for educational and portfolio purposes.
+## 🖥️ Live Application Preview
+![Storefront Widescreen Capture](https://pikwy.com/web/6a283b20819a900df963ed18)
