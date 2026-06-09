@@ -256,4 +256,4 @@ Developed as a frontend engineering project focused on premium gaming eCommerce 
 ---
 
 ## 🖥️ Live Application Preview
-![Storefront Widescreen Capture](https://pikwy.com/web/6a283b20819a900df963ed18)
+![Storefront Widescreen Capture](https://api.pikwy.com/web/6a283b20819a900df963ed18.jpg)
