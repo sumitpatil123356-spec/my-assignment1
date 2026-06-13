@@ -1,42 +1,76 @@
-import React from 'react';
-
-function CartDrawer({ isOpen, onClose, cartItems, onRemoveItem }) {
-  if (!isOpen) return null;
-  const totalCost = cartItems.reduce((acc, item) => acc + (item.value * item.quantity), 0);
-
+export default function CartDrawer({
+  isOpen,
+  onClose,
+  cart,
+  increaseQty,
+  decreaseQty,
+  removeFromCart,
+  totals,
+  onCheckout
+}) {
   return (
-    <div style={styles.overlay}>
-      <div style={styles.backdrop} onClick={onClose}></div>
-      <div style={styles.drawer}>
-        <div style={styles.header}>
-          <h3 style={styles.title} className="tech-mono">// MANIFEST_[{cartItems.length}]</h3>
-          <button onClick={onClose} style={styles.closeBtn}>✕</button>
+    <div className={`cart-overlay ${isOpen ? 'open' : ''}`} onClick={onClose}>
+      <div className="cart-drawer-panel" onClick={(e) => e.stopPropagation()}>
+        <div className="cart-header">
+          <span className="cart-header-title">Cart</span>
+          <button className="cart-close-btn" onClick={onClose}>✕</button>
         </div>
-        
-        <div style={styles.body}>
-          {cartItems.length === 0 ? (
-            <p style={styles.emptyMsg} className="tech-mono">SYSTEM_CART_EMPTY</p>
+
+        <div className="cart-items-container">
+          {cart.length === 0 ? (
+            <div className="cart-empty-state">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--color-text-secondary)' }}><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+              <span style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)' }}>Your cart is empty</span>
+            </div>
           ) : (
-            cartItems.map((item) => (
-              <div key={item.id} style={styles.cartItem}>
-                <div style={styles.itemMeta}>
-                  <h5 style={styles.itemName}>{item.label}</h5>
-                  <p style={styles.itemPrice} className="tech-mono">{item.quantity} x ${item.value.toFixed(2)}</p>
+            cart.map((item) => (
+              <div key={item.id} className="cart-item-row">
+                <div className="cart-item-details">
+                  <div className="cart-item-name">{item.label}</div>
+                  <div className="cart-item-meta">
+                    ${Number(item.value).toFixed(2)} each
+                  </div>
                 </div>
-                <button onClick={() => onRemoveItem(item.id)} style={styles.removeBtn} className="tech-mono">[X]</button>
+                <div className="cart-item-controls-col">
+                  <div className="cart-item-actions">
+                    <button className="cart-qty-btn" onClick={() => decreaseQty(item.id)}>−</button>
+                    <span className="cart-qty-value">{item.quantity}</span>
+                    <button className="cart-qty-btn" onClick={() => increaseQty(item.id)}>+</button>
+                  </div>
+                  <button className="cart-item-remove" onClick={() => removeFromCart(item.id)}>
+                    Remove
+                  </button>
+                </div>
               </div>
             ))
           )}
         </div>
 
-        {cartItems.length > 0 && (
-          <div style={styles.footer}>
-            <div style={styles.totalRow}>
-              <span className="tech-mono">AGGREGATE_TOTAL:</span>
-              <span style={styles.totalPrice} className="tech-mono">${totalCost.toFixed(2)}</span>
-            </div>
-            <button onClick={() => alert('Order initialized. Transmitting parameters.')} style={styles.checkoutBtn} className="tech-mono">
-              Execute Order Protocol
+        {cart.length > 0 && (
+          <div className="cart-footer">
+            <table className="cart-totals-table">
+              <tbody>
+                <tr>
+                  <td>Items</td>
+                  <td className="numeric-cell">{totals.itemsCount}</td>
+                </tr>
+                <tr>
+                  <td>Subtotal</td>
+                  <td className="numeric-cell">${totals.subtotal.toFixed(2)}</td>
+                </tr>
+                <tr>
+                  <td>Tax (8%)</td>
+                  <td className="numeric-cell">${totals.systemFees.toFixed(2)}</td>
+                </tr>
+                <tr className="total-row">
+                  <td>Total</td>
+                  <td className="numeric-cell">${totals.total.toFixed(2)}</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <button className="checkout-btn" onClick={onCheckout}>
+              Checkout
             </button>
           </div>
         )}
@@ -44,25 +78,3 @@ function CartDrawer({ isOpen, onClose, cartItems, onRemoveItem }) {
     </div>
   );
 }
-
-const styles = {
-  overlay: { position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 1000 },
-  backdrop: { position: 'absolute', width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(6px)' },
-  drawer: { position: 'absolute', right: 0, width: '360px', height: '100%', backgroundColor: 'var(--bg-surface)', borderLeft: '1px solid var(--border-technical)', display: 'flex', flexDirection: 'column' },
-  header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '24px', borderBottom: '1px solid var(--border-technical)' },
-  title: { fontSize: '13px', color: 'var(--brand-primary)' },
-  closeBtn: { background: 'none', border: 'none', color: 'var(--text-main)', cursor: 'pointer', fontSize: '14px' },
-  body: { flexGrow: 1, padding: '24px', overflowY: 'auto' },
-  emptyMsg: { textAlign: 'center', color: 'var(--text-muted)', marginTop: '40px', fontSize: '11px' },
-  cartItem: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '16px', marginBottom: '16px', borderBottom: '1px solid var(--border-technical)' },
-  itemMeta: { display: 'flex', flexDirection: 'column', gap: '4px' },
-  itemName: { fontSize: '13px', fontWeight: '600' },
-  itemPrice: { fontSize: '12px', color: 'var(--brand-primary)' },
-  removeBtn: { background: 'none', border: 'none', color: '#ff4d4d', cursor: 'pointer', fontSize: '12px' },
-  footer: { padding: '24px', borderTop: '1px solid var(--border-technical)', backgroundColor: 'var(--bg-canvas)' },
-  totalRow: { display: 'flex', justifyContent: 'space-between', marginBottom: '20px', fontSize: '13px' },
-  totalPrice: { color: 'var(--brand-primary)', fontWeight: '700' },
-  checkoutBtn: { width: '100%', padding: '14px', backgroundColor: 'var(--brand-primary)', color: '#000', border: 'none', borderRadius: 'var(--radius-sharp)', fontWeight: '700', cursor: 'pointer', fontSize: '12px' }
-};
-
-export default CartDrawer;

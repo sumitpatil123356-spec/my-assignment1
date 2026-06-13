@@ -1,50 +1,76 @@
-import React from 'react';
+import { NavLink, useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 
-function Navbar({ cartCount, onCartClick }) {
+export default function Navbar({ onCartClick, itemsCount, onSearchToggle }) {
+  const { user, role, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/');
+  };
+
   return (
-    <nav style={styles.navContainer}>
-      <div style={styles.logo} className="tech-mono">GAMEOVER<span style={{color: 'var(--brand-primary)'}}>_</span></div>
-      
-      <ul style={styles.navLinks}>
-        <li style={styles.activeLink} className="tech-mono">Home</li>
-        <li style={styles.link} className="tech-mono">About</li>
-        <li style={styles.link} className="tech-mono">Pricing</li>
-        <li style={styles.link} className="tech-mono">Tech Specs</li>
-        <li style={styles.link} className="tech-mono">Services</li>
-      </ul>
+    <nav className="navbar-sticky">
+      <div className="navbar-brand" onClick={() => navigate('/')}>
+        Nexus Gear
+      </div>
 
-      <div style={styles.utilityIcons}>
-        <button onClick={onCartClick} style={styles.iconBtn}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
-          <span style={styles.cartBadge} className="tech-mono">{cartCount}</span>
+      <div className="navbar-links">
+        <NavLink to="/" className={({ isActive }) => `navbar-link-item ${isActive ? 'active' : ''}`}>
+          Store
+        </NavLink>
+        {role === 'admin' && (
+          <NavLink to="/admin" className={({ isActive }) => `navbar-link-item ${isActive ? 'active' : ''}`}>
+            Admin
+          </NavLink>
+        )}
+      </div>
+
+      <div className="navbar-actions">
+        {user ? (
+          <div style={styles.userContainer}>
+            <span style={styles.username}>
+              {user.email.split('@')[0]}
+            </span>
+            <button className="navbar-action-btn" onClick={handleLogout}>
+              Logout
+            </button>
+          </div>
+        ) : (
+          <Link to="/login" className="navbar-action-btn" style={{ textDecoration: 'none' }}>
+            Login
+          </Link>
+        )}
+
+        <button className="navbar-action-btn" onClick={onSearchToggle}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          Search
         </button>
-        <button style={styles.loginBtn} className="tech-mono">Log_In</button>
+
+        <button className="navbar-action-btn cart-trigger-container" onClick={onCartClick}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+          Cart
+          {itemsCount > 0 && (
+            <span key={itemsCount} className="cart-badge cart-badge-pulse">
+              {itemsCount}
+            </span>
+          )}
+        </button>
       </div>
     </nav>
   );
 }
 
 const styles = {
-  navContainer: {
+  userContainer: {
     display: 'flex',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    padding: '24px 8%',
-    backgroundColor: 'rgba(0, 0, 0, 0.9)',
-    backdropFilter: 'blur(12px)',
-    borderBottom: '1px solid var(--border-technical)',
-    position: 'sticky',
-    top: 0,
-    zIndex: 100,
+    gap: '16px'
   },
-  logo: { fontSize: '16px', fontWeight: '800', color: 'var(--text-main)' },
-  navLinks: { display: 'flex', listStyle: 'none', gap: '40px', fontSize: '12px' },
-  activeLink: { color: 'var(--brand-primary)', fontWeight: '700', cursor: 'pointer' },
-  link: { color: 'var(--text-muted)', cursor: 'pointer', transition: 'var(--transition-fast)' },
-  utilityIcons: { display: 'flex', alignItems: 'center', gap: '30px' },
-  iconBtn: { background: 'none', border: 'none', color: 'var(--text-main)', cursor: 'pointer', position: 'relative', display: 'flex' },
-  cartBadge: { position: 'absolute', top: '-10px', right: '-12px', backgroundColor: 'var(--brand-primary)', color: '#000', fontSize: '10px', fontWeight: '700', padding: '1px 5px', borderRadius: '2px' },
-  loginBtn: { padding: '6px 18px', borderRadius: 'var(--radius-sharp)', border: '1px solid var(--border-technical)', background: 'var(--bg-surface)', color: 'var(--text-main)', fontSize: '12px', cursor: 'pointer' }
+  username: {
+    fontSize: '0.75rem',
+    color: 'var(--color-primary-accent)',
+    textShadow: '0 0 8px var(--color-accent-glow)',
+  }
 };
-
-export default Navbar;
